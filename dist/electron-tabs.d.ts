@@ -14,7 +14,7 @@ interface TabOptions {
     closable?: boolean;
     icon?: string;
     iconURL?: string;
-    ready?: ((tab: Tab) => void);
+    ready?: (tab: Tab) => void;
     src?: string;
     title?: string;
     visible?: boolean;
@@ -35,6 +35,7 @@ export class TabGroup extends HTMLElement {
     tabContainer: HTMLDivElement;
     tabs: Array<Tab>;
     viewContainer: HTMLDivElement;
+    activeIndex: number;
     constructor();
     emit(type: string, ...args: any[]): void;
     on(type: string, fn: (...detail: any[]) => void): void;

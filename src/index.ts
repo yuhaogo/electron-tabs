@@ -7,13 +7,13 @@ if (!document) {
 }
 
 interface TabGroupOptions {
-  closeButtonText: string,
-  defaultTab: TabOptions | ((tabGroup: TabGroup) => TabOptions),
-  newTabButton: boolean,
-  newTabButtonText: string,
-  sortable: boolean,
-  sortableOptions?: Sortable.Options
-  visibilityThreshold: number,
+  closeButtonText: string;
+  defaultTab: TabOptions | ((tabGroup: TabGroup) => TabOptions);
+  newTabButton: boolean;
+  newTabButtonText: string;
+  sortable: boolean;
+  sortableOptions?: Sortable.Options;
+  visibilityThreshold: number;
 }
 
 interface TabOptions {
@@ -22,7 +22,7 @@ interface TabOptions {
   closable?: boolean;
   icon?: string;
   iconURL?: string;
-  ready?: ((tab: Tab) => void);
+  ready?: (tab: Tab) => void;
   src?: string;
   title?: string;
   visible?: boolean;
@@ -30,8 +30,8 @@ interface TabOptions {
 }
 
 interface Badge {
-  text: string,
-  classname: string
+  text: string;
+  classname: string;
 }
 
 const CLASSNAMES = {
@@ -41,8 +41,8 @@ const CLASSNAMES = {
   TAB: "tab",
   BUTTONS: "buttons",
   VIEWS: "views",
-  VIEW: "view"
-}
+  VIEW: "view",
+};
 
 function emit(emitter: TabGroup | Tab, type: string, args: any[]) {
   if (type === "ready") {
@@ -51,11 +51,20 @@ function emit(emitter: TabGroup | Tab, type: string, args: any[]) {
   emitter.dispatchEvent(new CustomEvent(type, { detail: args }));
 }
 
-function on(emitter: TabGroup | Tab, type: string, fn: (detail: string) => void, options?: { [key: string]: any }) {
+function on(
+  emitter: TabGroup | Tab,
+  type: string,
+  fn: (detail: string) => void,
+  options?: { [key: string]: any }
+) {
   if (type === "ready" && emitter.isReady === true) {
     fn.apply(emitter, [emitter]);
   }
-  emitter.addEventListener(type, ((e: CustomEvent) => fn.apply(emitter, e.detail)) as EventListener, options);
+  emitter.addEventListener(
+    type,
+    ((e: CustomEvent) => fn.apply(emitter, e.detail)) as EventListener,
+    options
+  );
 }
 
 class TabGroup extends HTMLElement {
@@ -67,6 +76,7 @@ class TabGroup extends HTMLElement {
   tabContainer: HTMLDivElement;
   tabs: Array<Tab>;
   viewContainer: HTMLDivElement;
+  activeIndex: number = 0;
 
   constructor() {
     super();
@@ -80,7 +90,8 @@ class TabGroup extends HTMLElement {
       newTabButton: !!this.getAttribute("new-tab-button") === true || false,
       newTabButtonText: this.getAttribute("new-tab-button-text") || "&#65291;",
       sortable: !!this.getAttribute("sortable") === true || false,
-      visibilityThreshold: Number(this.getAttribute("visibility-threshold")) || 0
+      visibilityThreshold:
+        Number(this.getAttribute("visibility-threshold")) || 0,
     };
 
     this.tabs = [];
@@ -116,7 +127,7 @@ class TabGroup extends HTMLElement {
   }
 
   private createComponent() {
-    const shadow = this.attachShadow({mode: "open"});
+    const shadow = this.attachShadow({ mode: "open" });
     this.shadow = shadow;
 
     const wrapper = document.createElement("div");
@@ -137,9 +148,15 @@ class TabGroup extends HTMLElement {
     this.buttonContainer = buttonContainer;
 
     if (this.options.newTabButton) {
-      const button = this.buttonContainer.appendChild(document.createElement("button"));
+      const button = this.buttonContainer.appendChild(
+        document.createElement("button")
+      );
       button.innerHTML = this.options.newTabButtonText;
-      button.addEventListener("click", this.addTab.bind(this, undefined), false);
+      button.addEventListener(
+        "click",
+        this.addTab.bind(this, undefined),
+        false
+      );
     }
 
     const viewContainer = document.createElement("div");
@@ -172,11 +189,14 @@ class TabGroup extends HTMLElement {
 
   initSortable() {
     const createNewSortable = () => {
-      const options = Object.assign({
-        direction: "horizontal",
-        animation: 150,
-        swapThreshold: 0.20
-      }, this.options.sortableOptions);
+      const options = Object.assign(
+        {
+          direction: "horizontal",
+          animation: 150,
+          swapThreshold: 0.2,
+        },
+        this.options.sortableOptions
+      );
       new Sortable(this.tabContainer, options);
     };
 
@@ -252,12 +272,15 @@ class TabGroup extends HTMLElement {
 
   getActiveTab() {
     if (this.tabs.length === 0) return null;
-    return this.tabs[0];
+    return this.tabs[this.activeIndex];
   }
 
   setActiveTab(tab: Tab) {
-    this.removeTab(tab);
-    this.tabs.unshift(tab);
+    // this.removeTab(tab);
+    // this.tabs.unshift(tab);
+    const index = this.tabs.findIndex((t: Tab) => t.id === tab.id);
+    this.activeIndex = index;
+
     this.emit("tab-active", tab, this);
   }
 
@@ -333,7 +356,7 @@ class Tab extends EventTarget {
   }
 
   private initTab() {
-    const tab = this.element = document.createElement("div");
+    const tab = (this.element = document.createElement("div"));
     tab.classList.add(CLASSNAMES.TAB);
     for (let el of ["icon", "title", "badge", "close"]) {
       const span = tab.appendChild(document.createElement("span"));
@@ -361,7 +384,7 @@ class Tab extends EventTarget {
 
   private initTabClickHandler() {
     // Mouse up
-    const tabClickHandler = function(e: KeyboardEvent) {
+    const tabClickHandler = function (e: KeyboardEvent) {
       if (this.isClosed) return;
       if (e.which === 2) {
         this.close();
@@ -369,34 +392,47 @@ class Tab extends EventTarget {
     };
     this.element.addEventListener("mouseup", tabClickHandler.bind(this), false);
     // Mouse down
-    const tabMouseDownHandler = function(e: KeyboardEvent) {
+    const tabMouseDownHandler = function (e: KeyboardEvent) {
       if (this.isClosed) return;
       if (e.which === 1) {
         if ((e.target as HTMLElement).matches("button")) return;
         this.activate();
       }
     };
-    this.element.addEventListener("mousedown", tabMouseDownHandler.bind(this), false);
+    this.element.addEventListener(
+      "mousedown",
+      tabMouseDownHandler.bind(this),
+      false
+    );
   }
 
   initWebview() {
-    const webview = this.webview = document.createElement("webview");
+    const webview = (this.webview = document.createElement("webview"));
 
-    const tabWebviewDidFinishLoadHandler = function(e: Event) {
+    const tabWebviewDidFinishLoadHandler = function (e: Event) {
       this.emit("webview-ready", this);
     };
 
-    this.webview.addEventListener("did-finish-load", tabWebviewDidFinishLoadHandler.bind(this), false);
+    this.webview.addEventListener(
+      "load",
+      tabWebviewDidFinishLoadHandler.bind(this),
+      false
+    );
 
-    const tabWebviewDomReadyHandler = function(e: Event) {
+    const tabWebviewDomReadyHandler = function (e: Event) {
       // Remove this once https://github.com/electron/electron/issues/14474 is fixed
       webview.blur();
       webview.focus();
-      this.emit("webview-dom-ready", this);
+      this.emit("ready", this);
     };
 
-    this.webview.addEventListener("dom-ready", tabWebviewDomReadyHandler.bind(this), false);
+    this.webview.addEventListener(
+      "dom-ready",
+      tabWebviewDomReadyHandler.bind(this),
+      false
+    );
 
+    this.webview.classList.add("webview");
     this.webview.classList.add(CLASSNAMES.VIEW);
     if (this.webviewAttributes) {
       const attrs = this.webviewAttributes;
@@ -472,7 +508,7 @@ class Tab extends EventTarget {
     const tabContainer = this.tabGroup.tabContainer;
     const length = tabContainer.childElementCount;
     const thisPosition = this.getPosition();
-    const tabs = Array.from(tabContainer.children)
+    const tabs = Array.from(tabContainer.children);
     tabs.splice(thisPosition, 1);
 
     if (newPosition < 0) {
@@ -545,7 +581,8 @@ class Tab extends EventTarget {
     this.emit("closing", this, abort);
 
     const abortSignal = abortController.signal;
-    if (this.isClosed || (!this.closable && !force) || abortSignal.aborted) return;
+    if (this.isClosed || (!this.closable && !force) || abortSignal.aborted)
+      return;
 
     this.isClosed = true;
     const tabGroup = this.tabGroup;

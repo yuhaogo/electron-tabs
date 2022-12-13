@@ -2,22 +2,24 @@
 /* ================= */
 
 :host {
-  --tabgroup-background: #E7EAED;
-  --tab-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --tabgroup-background: #e7eaed;
+  --tab-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   --tab-font-size: 13px;
-  --tab-background: #E7EAED;
-  --tab-color: #696A6C;
-  --tab-border-color: #DADCE0;
+  --tab-background: #e7eaed;
+  --tab-color: #696a6c;
+  --tab-border-color: #dadce0;
   --tab-transition: background-color 200ms ease-out, color 200ms ease-out;
   --tab-cursor: pointer;
   --tab-active-color: currentcolor;
-  --tab-active-background: #FFF;
+  --tab-active-background: #fff;
   --tag-hover-color: currentcolor;
-  --tag-hover-background: #F1F3F4;
+  --tag-hover-background: #f1f3f4;
   --button-font-size: 15px;
   --button-background: none;
-  --button-color: #696A6C;
-  --button-hover-background: #DADCE0;
+  --button-color: #696a6c;
+  --button-hover-background: #dadce0;
   --button-hover-color: #383a3e;
   --button-border-radius: 50%;
   --button-cursor: pointer;
@@ -29,21 +31,22 @@
 /* STYLES */
 /* ====== */
 
-webview {
+.webview {
   position: absolute;
   visibility: hidden;
   width: 100%;
   height: 100%;
+  border: none;
 }
 
-webview.visible {
+.webview.visible {
   visibility: visible;
 }
 
 .etabs {
   font-family: var(--tab-font-family);
   text-rendering: optimizeLegibility;
-  font-feature-settings: 'liga', 'clig', 'kern';
+  font-feature-settings: "liga", "clig", "kern";
 }
 
 .nav {
@@ -57,6 +60,7 @@ webview.visible {
   cursor: default;
   -webkit-user-select: none;
   user-select: none;
+  -webkit-app-region: drag;
 }
 
 .nav.visible {
@@ -80,6 +84,7 @@ webview.visible {
   height: 100%;
   padding: 5px 9px;
   align-items: center;
+  -webkit-app-region: no-drag;
 }
 
 .tab:first-child {
@@ -93,10 +98,10 @@ webview.visible {
 .tab.active {
   color: var(--tab-active-color);
   background: var(--tab-active-background);
-	border-left: 1px solid var(--tab-border-color);
-	border-right: 1px solid var(--tab-border-color);
-	padding-left: 8px;
-	padding-right: 8px;
+  border-left: 1px solid var(--tab-border-color);
+  border-right: 1px solid var(--tab-border-color);
+  padding-left: 8px;
+  padding-right: 8px;
   box-shadow: none;
 }
 
@@ -104,13 +109,13 @@ webview.visible {
   border-right: none;
 }
 
-.tab.visible:not(.active)+.tab.visible:not(.active) {
-	border-left: 1px solid var(--tab-border-color);
-	padding-left: 8px;
+.tab.visible:not(.active) + .tab.visible:not(.active) {
+  border-left: 1px solid var(--tab-border-color);
+  padding-left: 8px;
 }
 
 .tab:not(.active):hover {
-	background: var(--tab-hover-background);
+  background: var(--tab-hover-background);
   color: var(--tab-hover-color);
 }
 
@@ -184,7 +189,7 @@ webview.visible {
   color: var(--button-color);
   background: var(--button-background);
   border-radius: var(--button-border-radius);
-	cursor: var(--button-cursor);
+  cursor: var(--button-cursor);
   font-size: var(--button-font-size);
   display: block;
   font-family: inherit;
